@@ -1,0 +1,185 @@
+
+---
+
+# HueFi
+
+HueFi is a decentralized color prediction game built on Starknet that allows players to stake STRK and test their luck by selecting a color. If the player's selected color matches the randomly generated color, they receive double their stake as a reward. Otherwise, the staked amount is retained by the contract.
+
+HueFi combines simple gameplay mechanics with secure smart contract infrastructure, ensuring transparent game resolution, verifiable outcomes, and trustless fund management.
+
+---
+
+# Overview
+
+HueFi is designed as an on-chain game where users participate by staking tokens and selecting one of several available colors. The smart contract securely handles stake transfers, determines the outcome using deterministic randomness, and automatically distributes rewards to winners.
+
+All game activity is recorded on-chain, providing full transparency and auditability.
+
+The contract is built using Cairo for deployment on Starknet and integrates with an ERC-20 compatible USDC token for staking and payouts.
+
+---
+
+# How It Works
+
+The HueFi game follows a simple and transparent process:
+
+1. A player selects a color from the available options.
+2. The player stakes a specified amount of STRK.
+3. The smart contract generates a pseudo-random color.
+4. If the player's selected color matches the generated color:
+
+   * The player receives 2× their stake.
+5. If the colors do not match:
+
+   * The contract retains the stake.
+6. The game result and player statistics are recorded on-chain.
+
+This process ensures fairness, automation, and trustless execution.
+
+---
+
+# Core Features
+
+HueFi provides the following functionality:
+
+**On-Chain Color Prediction Game**
+Players stake USDC and select a color to participate.
+
+**Automated Reward Distribution**
+Winning players automatically receive double their stake.
+
+**Transparent Game Results**
+All game outcomes are recorded on-chain and emitted as events.
+
+**Player Statistics Tracking**
+The contract tracks:
+
+* Number of games played per player
+* Last game result per player
+
+**Secure Fund Management**
+The contract securely stores and distributes funds using ERC-20 token standards.
+
+**Ownership Controls**
+The contract owner can:
+
+* Withdraw contract funds
+* Transfer ownership
+
+---
+
+# Smart Contract Architecture
+
+The HueFi smart contract includes the following components:
+
+**Game Logic**
+
+* Stake validation
+* Color selection validation
+* Random outcome generation
+* Reward calculation and distribution
+
+**Token Integration**
+
+* ERC-20 USDC integration
+* Secure token transfers
+* Balance verification
+
+**Player State Tracking**
+
+* Games played counter
+* Last result tracking
+
+**Security Controls**
+
+* Ownership restrictions
+* Insolvency protection
+* Input validation
+
+**Event Logging**
+
+The contract emits events for:
+
+* Game played
+* Funds withdrawn
+* Ownership transferred
+
+These events allow external applications to monitor contract activity.
+
+---
+
+# Randomness Model
+
+HueFi uses a deterministic pseudo-random generation mechanism based on:
+
+* Internal nonce
+* Player address
+* Stake amount
+
+This ensures that outcomes cannot be predicted externally before transaction execution while remaining verifiable.
+
+---
+
+# Technology Stack
+
+HueFi is built using the following technologies:
+
+* Cairo programming language
+* Starknet smart contract platform
+* ERC-20 token standard (USDC)
+* Starknet event system
+* On-chain storage and state management
+
+---
+
+# Security Considerations
+
+HueFi implements several protections to ensure contract safety:
+
+* Stake validation to prevent invalid input
+* Contract solvency checks before payouts
+* Ownership-restricted administrative functions
+* Secure ERC-20 transfer handling
+* On-chain state tracking for transparency
+
+---
+
+# Use Cases
+
+HueFi serves as a foundation for:
+
+* On-chain games
+* Blockchain-based prediction systems
+* Web3 gaming applications
+* Educational demonstrations of smart contract game logic
+* Starknet ecosystem projects
+
+---
+
+# Future Improvements
+
+Potential enhancements include:
+
+* More games
+* Leaderboard system
+* Multiple token support
+* Adjustable reward multipliers
+* Game difficulty levels
+
+---
+
+# Author
+
+Peter Idiku
+Promise Obi
+
+
+---
+
+# License
+
+This project is licensed under the MIT License.
+
+---
+
+
