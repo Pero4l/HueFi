@@ -42,7 +42,7 @@ export function BalanceHeader({ balance, onAddFunds, isDemoMode, onExitDemo }: B
               <rect x="11" y="11" width="7" height="7" rx="2" fill="hsl(47 100% 50%)" />
             </svg>
           </div>
-          <h1 className="text-lg font-bold tracking-tight text-foreground">ColorStack</h1>
+          <h1 className="text-lg font-bold tracking-tight text-white">HueFi</h1>
         </div>
 
         <div className="flex items-center gap-3">

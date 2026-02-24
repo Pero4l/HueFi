@@ -39,7 +39,7 @@ export function Navbar() {
                   <rect x="11" y="11" width="7" height="7" rx="2" fill="hsl(47 100% 50%)" />
                 </svg>
               </div>
-              <span className="text-lg font-semibold tracking-tight">ColorStack</span>
+              <span className="text-2xl font-semibold text-white">HueFi</span>
             </div>
           </Link>
 
@@ -63,7 +63,7 @@ export function Navbar() {
             ) : (
               <button
                 onClick={() => setModalOpen(true)}
-                className="cursor-pointer inline-flex h-11 items-center justify-center rounded-xl bg-[#facc15] md:px-8 px-3 md:text-md text-sm font-semibold text-black shadow-md transition hover:bg-[#eab308]"
+                className="cursor-pointer inline-flex h-11 items-center justify-center rounded-xl bg-[#facc15] md:px-8 px-4 md:text-md text-sm font-semibold text-black shadow-md transition hover:bg-[#eab308]"
               >
                 <Wallet className="md:w-6 w-4 md:h-6 h-4 mr-4" />
                 Connect Wallet

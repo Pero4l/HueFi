@@ -21,12 +21,12 @@ export function StakeInput({
     <div className="flex flex-col gap-3">
       <label
         htmlFor="stake-input"
-        className="text-sm font-medium text-muted-foreground text-[#74899d]"
+        className="text-sm font-medium text-muted-foreground text-white"
       >
         Stake Amount
       </label>
       <div className="relative">
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-sm text-muted-foreground">
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-sm text-white">
           $
         </span>
         <input
@@ -41,7 +41,7 @@ export function StakeInput({
             setStake(Math.min(val, balance));
           }}
           disabled={disabled}
-          className="h-11 w-full rounded-lg border border-[#25262f] bg-[#25262f] pl-7 pr-3 font-mono text-sm text-foreground outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-50 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+          className="h-11 w-full rounded-lg border border-[#25262f] bg-[#25262f] pl-7 pr-3 font-mono text-sm text-white outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-50 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
         />
       </div>
       <div className="flex flex-wrap gap-2">
@@ -56,7 +56,7 @@ export function StakeInput({
               ${
                 stake === amount
                   ? "border-[#feb808] bg-[#2b2514] text-[#feb808]"
-                  : "border-[#25262f] bg-[#25262f] text-muted-foreground"
+                  : "border-[#25262f] bg-[#25262f] text-white"
               }`}
           >
             ${amount}
@@ -71,7 +71,7 @@ export function StakeInput({
             ${
               stake === balance && balance > 0
                 ? "border-[#feb808] bg-[#2b2514] text-[#feb808]"
-                : "border-[#25262f] bg-[#25262f] text-muted-foreground"
+                : "border-[#25262f] bg-[#25262f] text-white"
           }`}
         >
           All In
