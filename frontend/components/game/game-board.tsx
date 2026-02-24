@@ -66,7 +66,7 @@ export function GameBoard({ isDemoMode, onExitDemo }: GameBoardProps) {
 
   return (
     <div className="mx-auto flex max-w-lg flex-col gap-6 px-4 md:mt-0 -mt-12">
-      <div className="flex items-center justify-between rounded-xl bg-[#191a1f] border border-[#1f2025] px-4 py-3">
+      <div className="flex items-center justify-between rounded-xl bg-[#191a1f] border border-[#1f2025] px-4 py-3 mt-12">
         {isConnected && address ? (
           <>
             <div className="flex items-center gap-2">

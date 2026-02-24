@@ -39,7 +39,7 @@ export function Navbar() {
                   <rect x="11" y="11" width="7" height="7" rx="2" fill="hsl(47 100% 50%)" />
                 </svg>
               </div>
-              <span className="text-2xl font-semibold text-white">HueFi</span>
+              <span className="text-lg font-semibold tracking-tight text-white">HueFi</span>
             </div>
           </Link>
 
