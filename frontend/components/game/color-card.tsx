@@ -43,7 +43,7 @@ export function ColorCard({
           ${selected && "animate-pulse-glow"}`}
         style={{ backgroundColor: config.hex }}
       />
-      <span className="text-sm font-semibold text-foreground">
+      <span className="text-sm font-semibold text-white">
         {config.label}
       </span>
       <span
