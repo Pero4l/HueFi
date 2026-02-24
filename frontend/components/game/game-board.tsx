@@ -119,11 +119,11 @@ export function GameBoard({ isDemoMode, onExitDemo }: GameBoardProps) {
                     className="h-5 w-5 rounded-full"
                     style={{ backgroundColor: COLOR_CONFIG[selectedColor].hex }}
                   />
-                  <span className="text-sm font-medium text-foreground">
+                  <span className="text-sm font-medium text-white">
                     {COLOR_CONFIG[selectedColor].label} selected
                   </span>
                   <span
-                    className="font-mono text-xs font-bold"
+                    className="font-mono text-xs font-bold text-white"
                     style={{ color: COLOR_CONFIG[selectedColor].hex }}
                   >
                     ({COLOR_CONFIG[selectedColor].multiplier}x)
