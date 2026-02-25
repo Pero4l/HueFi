@@ -125,8 +125,8 @@ export function GameHistory({ history }: GameHistoryProps) {
             />
           ))}
         </div>
-        <p className="text-sm text-muted-foreground">No games played yet</p>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-sm text-white">No games played yet</p>
+        <p className="text-xs text-white">
           Place your first bet to get started
         </p>
       </div>
@@ -146,7 +146,7 @@ export function GameHistory({ history }: GameHistoryProps) {
         return (
           <div
             key={round.id}
-            className={`flex items-center justify-between rounded-lg border px-3 py-2.5 transition-all
+            className={`flex items-center justify-between rounded-lg border border-white px-3 py-2.5 transition-all
               ${index === 0 ? "animate-slide-up" : ""}
               ${
                 round.won
@@ -155,7 +155,7 @@ export function GameHistory({ history }: GameHistoryProps) {
               }`}
           >
             <div className="flex items-center gap-3">
-              <span className="font-mono text-xs text-muted-foreground">
+              <span className="font-mono text-xs text-white">
                 #{round.id}
               </span>
               <div className="flex items-center gap-1.5">
@@ -171,7 +171,7 @@ export function GameHistory({ history }: GameHistoryProps) {
                   height="12"
                   viewBox="0 0 12 12"
                   fill="none"
-                  className="text-muted-foreground"
+                  className="text-white"
                   aria-hidden="true"
                 >
                   <path
@@ -190,7 +190,7 @@ export function GameHistory({ history }: GameHistoryProps) {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <span className="font-mono text-xs text-muted-foreground">
+              <span className="font-mono text-xs text-white">
                 ${round.stake.toFixed(0)}
               </span>
               <span

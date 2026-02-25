@@ -206,7 +206,7 @@ export function GameBoard({ isDemoMode, onExitDemo }: GameBoardProps) {
 
         {/* History */}
         <div className="mt-2">
-          <p className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+          <p className="mb-3 text-xs font-medium uppercase tracking-wider text-white">
             Game History
           </p>
           <GameHistory history={history} />
@@ -215,7 +215,7 @@ export function GameBoard({ isDemoMode, onExitDemo }: GameBoardProps) {
 
       {/* Footer */}
       <footer className="flex items-center justify-center pb-2">
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-white">
           ColorStack -- For entertainment purposes only
         </p>
       </footer>
