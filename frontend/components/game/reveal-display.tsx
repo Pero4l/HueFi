@@ -48,7 +48,7 @@ export function RevealDisplay({
       {/* Result text */}
       {phase === "result" && (
         <div className="flex flex-col items-center gap-2 animate-slide-up">
-          <p className="text-lg font-semibold text-foreground">
+          <p className="text-lg font-semibold text-white">
             Winning color: <span style={{ color: config.hex }}>{config.label}</span>
           </p>
           {won ? (

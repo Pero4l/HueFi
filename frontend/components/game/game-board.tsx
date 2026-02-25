@@ -65,7 +65,7 @@ export function GameBoard({ isDemoMode, onExitDemo }: GameBoardProps) {
     isBetting && selectedColor !== null && stake > 0 && stake <= balance;
 
   return (
-    <div className="mx-auto flex max-w-lg flex-col gap-6 px-4 md:mt-0 -mt-12">
+    <div className="mx-auto flex max-w-lg flex-col gap-6 px-4 md:mt-0">
       <div className="flex items-center justify-between rounded-xl bg-[#191a1f] border border-[#1f2025] px-4 py-3 mt-12">
         {isConnected && address ? (
           <>
@@ -119,11 +119,11 @@ export function GameBoard({ isDemoMode, onExitDemo }: GameBoardProps) {
                     className="h-5 w-5 rounded-full"
                     style={{ backgroundColor: COLOR_CONFIG[selectedColor].hex }}
                   />
-                  <span className="text-sm font-medium text-foreground">
+                  <span className="text-sm font-medium text-white">
                     {COLOR_CONFIG[selectedColor].label} selected
                   </span>
                   <span
-                    className="font-mono text-xs font-bold"
+                    className="font-mono text-xs font-bold text-white"
                     style={{ color: COLOR_CONFIG[selectedColor].hex }}
                   >
                     ({COLOR_CONFIG[selectedColor].multiplier}x)

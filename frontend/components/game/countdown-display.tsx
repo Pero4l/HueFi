@@ -49,14 +49,14 @@ export function CountdownDisplay({
           />
         </svg>
         <span
-          className={`font-mono text-5xl font-bold tabular-nums text-foreground ${
+          className={`font-mono text-5xl font-bold tabular-nums text-white ${
             isUrgent ? "animate-countdown-pulse text-destructive" : ""
           }`}
         >
           {countdown}
         </span>
       </div>
-      <p className="text-sm text-muted-foreground">
+      <p className="text-sm text-white">
         {isUrgent ? "Almost there..." : "Drawing color..."}
       </p>
     </div>
