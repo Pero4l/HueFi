@@ -197,7 +197,7 @@ export function GameBoard({ isDemoMode, onExitDemo }: GameBoardProps) {
       {/* Footer */}
       <footer className="flex items-center justify-center pb-2">
         <p className="text-xs text-white">
-          ColorStack -- For entertainment purposes only
+          HueFi -- For entertainment purposes only
         </p>
       </footer>
     </div>
