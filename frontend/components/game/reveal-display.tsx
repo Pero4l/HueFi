@@ -48,12 +48,12 @@ export function RevealDisplay({
       {/* Result text */}
       {phase === "result" && (
         <div className="flex flex-col items-center gap-2 animate-slide-up">
-          <p className="text-lg font-semibold text-white">
+          <p className="text-md font-semibold text-white">
             Winning color: <span style={{ color: config.hex }}>{config.label}</span>
           </p>
           {won ? (
             <div className="flex flex-col items-center gap-1">
-              <p className="text-2xl font-bold text-[" style={{ color: "#20c45d" }}>
+              <p className="text-xl font-black uppercase tracking-tighter" style={{ color: "#20c45d" }}>
                 You won!
               </p>
               <p className="font-mono text-xl font-bold" style={{ color: "#20c45d" }}>
@@ -62,7 +62,7 @@ export function RevealDisplay({
             </div>
           ) : (
             <div className="flex flex-col items-center gap-1">
-              <p className="text-2xl font-bold" style={{ color: "#d82829" }}>
+              <p className="text-xl font-bold" style={{ color: "#d82829" }}>
                 Better luck next time
               </p>
               <p className="font-mono text-xl font-bold" style={{ color: "#d82829" }}>
