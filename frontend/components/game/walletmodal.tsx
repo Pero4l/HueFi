@@ -32,45 +32,51 @@ export function WalletModal({ isOpen, onClose }: WalletModalProps) {
           </button>
         </div>
 
-        {/* Wallet List — automatically shows installed wallets */}
+        {/* Wallet List */}
         <div className="flex flex-col gap-3">
-          {connectors.map((connector) => (
-            <button
-              key={connector.id}
-              onClick={async () => {
-                connect({ connector });
-                onClose();
-              }}
-              disabled={isPending}
-              className="flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 px-4 py-3 transition hover:border-white/20 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {/* Wallet icon */}
-              <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-[#111319] overflow-hidden">
-                {connector.icon && typeof connector.icon === "string" ? (
-                  <Image
-                    src={connector.icon as string}
-                    alt={connector.name}
-                    width={28}
-                    height={28}
-                    className="object-contain"
-                  />
-                ) : (
-                  <Wallet className="h-5 w-5 text-white/40" />
-                )}
-              </div>
+          {connectors.length > 0 ? (
+            connectors.map((connector) => (
+              <button
+                key={connector.id}
+                onClick={async () => {
+                  connect({ connector });
+                  onClose();
+                }}
+                disabled={isPending}
+                className="group flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 px-4 py-3 transition hover:border-white/20 hover:bg-white/10 disabled:opacity-50"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-[#111319] overflow-hidden p-1 transition-transform group-hover:scale-110">
+                  {connector.icon && typeof connector.icon === "string" ? (
+                    <Image
+                      src={connector.icon as string}
+                      alt={connector.name}
+                      width={28}
+                      height={28}
+                      className="object-contain"
+                    />
+                  ) : (
+                    <Wallet className="h-5 w-5 text-white/40" />
+                  )}
+                </div>
+                <div className="text-left flex-1">
+                  <p className="text-sm font-semibold text-white">{connector.name}</p>
+                  <p className="text-xs text-white/40">
+                    {isPending ? "Connecting..." : "Detected"}
+                  </p>
+                </div>
+                <span className="text-xs text-white/30 group-hover:text-white transition-colors">→</span>
+              </button>
+            ))
+          ) : (
+            <div className="flex flex-col items-center gap-2 py-6 rounded-xl border border-dashed border-white/10 bg-white/5">
+              <Wallet className="h-8 w-8 text-white/20" />
+              <p className="text-sm font-medium text-white/60">No wallets detected</p>
+              <p className="text-xs text-white/30 px-6 text-center">
+                Install one of the recommended wallets below to play.
+              </p>
+            </div>
+          )}
 
-              <div className="text-left flex-1">
-                <p className="text-sm font-semibold text-white">
-                  {connector.name}
-                </p>
-                <p className="text-xs text-white/40">
-                  {isPending ? "Connecting..." : "Click to connect"}
-                </p>
-              </div>
-
-              <span className="text-xs text-white/30">→</span>
-            </button>
-          ))}
         </div>
 
         {/* Error */}
