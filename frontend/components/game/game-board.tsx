@@ -161,10 +161,9 @@ export function GameBoard({ isDemoMode, onExitDemo }: GameBoardProps) {
               disabled={!canBet}
               className={`h-12 w-full rounded-xl font-semibold transition-all
                 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
-                ${
-                  canBet
-                    ? "bg-[#ffc800] text-black hover:bg-primary/90 active:scale-[0.98]"
-                    : "cursor-not-allowed bg-[#25262f] text-muted-foreground text-[#7a889a]"
+                ${canBet
+                  ? "bg-[#ffc800] text-black hover:bg-primary/90 active:scale-[0.98]"
+                  : "cursor-not-allowed bg-[#25262f] text-muted-foreground text-[#7a889a]"
                 }`}
             >
               {!selectedColor
@@ -172,7 +171,7 @@ export function GameBoard({ isDemoMode, onExitDemo }: GameBoardProps) {
                 : stake <= 0
                   ? "Enter stake amount"
                   : stake > balance
-                    ? "Insufficient balance"
+                    ? "Your account has no tokens to play the game"
                     : `Place Bet - ${stake.toFixed(2)} STRK`}
             </button>
           </div>
