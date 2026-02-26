@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useCallback, useEffect } from "react"
-import { useAccount, useSendTransaction } from "@starknet-react/core"
+import { useAccount, useSendTransaction, useTransactionReceipt } from "@starknet-react/core"
 import { CallData, uint256 } from "starknet"
 
 export type GameColor = "red" | "blue" | "green" | "yellow"
@@ -34,15 +34,12 @@ const STRK_TOKEN_ADDRESS = (process.env.NEXT_PUBLIC_STRK_TOKEN_ADDRESS ||
 
 const COUNTDOWN_DURATION = 10
 const COLOR_MAP: Record<GameColor, number> = { red: 0, blue: 1, green: 2, yellow: 3 }
+const REVERSE_COLOR_MAP: Record<number, GameColor> = { 0: "red", 1: "blue", 2: "green", 3: "yellow" }
 
 export function useColorGame(initialBalance = 1000) {
   const { address, isConnected } = useAccount()
 
   // ---------- Balance via server-side API route ----------
-  // We bypass starknet-react's useBalance and direct browser RPC calls
-  // because the Cartridge RPC doesn't handle CORS for browser origins.
-  // Instead we call our own /api/balance route which proxies server-side.
-
   const [balanceDataRaw, setBalanceDataRaw] = useState<bigint | null>(null)
   const [isBalanceLoading, setIsBalanceLoading] = useState(true)
   const [balanceError, setBalanceError] = useState<unknown>(null)
@@ -81,7 +78,6 @@ export function useColorGame(initialBalance = 1000) {
     }
   }, [address, isConnected, fetchBalance])
 
-  // Provide a fake refetch function for the rest of the app
   const refetchBalance = fetchBalance
 
   const [localBalance, setLocalBalance] = useState<number>(initialBalance)
@@ -93,6 +89,23 @@ export function useColorGame(initialBalance = 1000) {
   const [winningColor, setWinningColor] = useState<GameColor | null>(null)
   const [lastPayout, setLastPayout] = useState(0)
   const [history, setHistory] = useState<GameRound[]>([])
+
+  // Transaction Tracking
+  const [lastTxHash, setLastTxHash] = useState<string | undefined>(undefined)
+  const { data: receipt, isSuccess: isTxAccepted } = useTransactionReceipt({ hash: lastTxHash })
+
+  // Manual fallback for hang prevention
+  const [revealStartedAt, setRevealStartedAt] = useState<number | null>(null)
+
+  useEffect(() => {
+    if (phase === "revealing" && !revealStartedAt) {
+      setRevealStartedAt(Date.now())
+    } else if (phase !== "revealing") {
+      setRevealStartedAt(null)
+    }
+  }, [phase, revealStartedAt])
+
+  const isTimedOut = revealStartedAt !== null && (Date.now() - revealStartedAt > 25000)
 
   // Real on-chain balance (in STRK, formatted). Falls back to local demo balance.
   const realBalance = balanceDataRaw !== null ? Number(balanceDataRaw) / 1e18 : 0
@@ -109,12 +122,6 @@ export function useColorGame(initialBalance = 1000) {
     }
   }, [isConnected, localBalance])
 
-  useEffect(() => {
-    if (isConnected || balanceError) {
-      console.log("[HueFi] Wallet:", { address, balance: balanceDataRaw?.toString(), CONTRACT_ADDRESS, balanceError })
-    }
-  }, [isConnected, address, balanceDataRaw, balanceError])
-
   const { sendAsync: sendPlayTransaction } = useSendTransaction({})
 
   const pickWinningColor = useCallback((): GameColor => {
@@ -130,42 +137,97 @@ export function useColorGame(initialBalance = 1000) {
         interval = setInterval(() => setCountdown((p) => p - 1), 1000)
       } else {
         setPhase("revealing")
-        setWinningColor(pickWinningColor())
+        // In live mode, we wait for tx confirmation. In demo mode, we just spin.
+        if (!isLiveMode) {
+          setWinningColor(pickWinningColor())
+        }
       }
     }
     return () => { if (interval) clearInterval(interval) }
-  }, [phase, countdown, pickWinningColor])
+  }, [phase, countdown, pickWinningColor, isLiveMode])
 
   // Reveal → result transition + history
   useEffect(() => {
-    if (phase === "revealing" && winningColor && selectedColor) {
-      const timer = setTimeout(async () => {
-        const won = winningColor === selectedColor
-        const payout = won ? stake * COLOR_CONFIG[selectedColor].multiplier : 0
+    // We proceed if: 
+    // 1. We are in demo mode
+    // 2. OR Transaction is accepted
+    // 3. OR we've waited too long (fallback)
+    const shouldProceedToResult = !isLiveMode || (isTxAccepted && phase === "revealing") || isTimedOut
 
-        if (!isLiveMode) {
-          // Demo mode: update local balance
-          if (won) setLocalBalance((b) => b + payout)
+    if (phase === "revealing" && shouldProceedToResult && selectedColor) {
+      console.log("[HueFi] Proceeding to result...", { isLiveMode, isTxAccepted, isTimedOut, lastTxHash })
+      const handleResult = async () => {
+        let won = false
+        let winner: GameColor = "red" // fallback
+
+        if (isLiveMode && address) {
+          console.log("[HueFi] Fetching live result from API for", address)
+          try {
+            // Wait slightly more to ensure contract state is updated
+            await new Promise(r => setTimeout(r, 2000))
+            // Fetch result from contract
+            const resp = await fetch(`/api/game-result?address=${address}`)
+            const json = await resp.json()
+            console.log("[HueFi] Game result API response:", json)
+
+            if (json.result && json.result.length > 0) {
+              const resU256 = json.result[0]
+              won = Number(resU256) === 1
+              console.log("[HueFi] Game result determined:", won ? "WON" : "LOST")
+
+              if (won) {
+                winner = selectedColor
+              } else {
+                // If lost, pick a color that is NOT the selected one
+                const others = (["red", "blue", "green", "yellow"] as GameColor[]).filter(c => c !== selectedColor)
+                winner = others[Math.floor(Math.random() * 3)]
+              }
+            } else {
+              console.warn("[HueFi] Invalid API response format, falling back to random", json)
+              throw new Error("Invalid result format")
+            }
+          } catch (err) {
+            console.error("[HueFi] Failed to fetch game result:", err)
+            // fallback to random if API fails
+            winner = pickWinningColor()
+            won = winner === selectedColor
+          }
         } else {
-          // Live mode: refetch on-chain balance so it reflects the TX result
-          try { await refetchBalance() } catch (err) { }
+          // Demo mode
+          winner = winningColor || pickWinningColor()
+          won = winner === selectedColor
         }
 
+        const payout = won ? stake * COLOR_CONFIG[selectedColor].multiplier : 0
+        console.log("[HueFi] Final result summary:", { winner, won, payout })
+        setWinningColor(winner)
         setLastPayout(payout)
-        setPhase("result")
 
-        setHistory((prev) => [
-          { id: Date.now(), selectedColor, winningColor, stake, won, payout, timestamp: new Date() },
-          ...prev,
-        ].slice(0, 20))
-      }, 1500)
+        if (!isLiveMode) {
+          if (won) setLocalBalance((b) => b + payout)
+        } else {
+          console.log("[HueFi] Refreshing balance from on-chain data...")
+          await refetchBalance()
+        }
+
+        setPhase("result")
+        setHistory((prev) => {
+          const newEntry = { id: Date.now(), selectedColor, winningColor: winner, stake, won, payout, timestamp: new Date() }
+          const updatedHistory = [newEntry, ...prev].slice(0, 20)
+          console.log("[HueFi] History updated. Total items:", updatedHistory.length)
+          return updatedHistory
+        })
+      }
+
+      const timer = setTimeout(handleResult, 1500)
       return () => clearTimeout(timer)
     }
-  }, [phase, winningColor, selectedColor, stake, isLiveMode, refetchBalance])
+  }, [phase, isTxAccepted, isTimedOut, selectedColor, stake, isLiveMode, address, winningColor, pickWinningColor, refetchBalance, lastTxHash])
 
   const placeBet = useCallback(async () => {
     if (isSubmitting || !selectedColor || stake <= 0 || stake > balance || phase !== "betting") return
     setIsSubmitting(true)
+    console.log("[HueFi] Placing bet...", { selectedColor, stake })
 
     const stakeAmount = BigInt(Math.floor(stake * 1e18))
     const stakeU256 = uint256.bnToUint256(stakeAmount)
@@ -188,11 +250,14 @@ export function useColorGame(initialBalance = 1000) {
             }),
           },
         ]
-        await sendPlayTransaction(calls)
+        const txRes = await sendPlayTransaction(calls)
+        console.log("[HueFi] Transaction sent. Hash:", txRes.transaction_hash)
+        setLastTxHash(txRes.transaction_hash)
         // Deduct locally while waiting for chain confirmation
         setLocalBalance((prev) => prev - stake)
       } else {
         // Demo mode: just deduct locally
+        console.log("[HueFi] Demo mode: deducting stake locally.")
         setLocalBalance((prev) => prev - stake)
       }
 
@@ -200,21 +265,26 @@ export function useColorGame(initialBalance = 1000) {
       setCountdown(COUNTDOWN_DURATION)
     } catch (e) {
       console.error("[HueFi] Transaction failed:", e)
-      // Fallback — still play in demo mode so the UI doesn't get stuck
-      setLocalBalance((prev) => prev - stake)
-      setPhase("countdown")
-      setCountdown(COUNTDOWN_DURATION)
+      setIsSubmitting(false)
+      // If live mode failed, don't move forward to countdown
+      if (!isLiveMode) {
+        setLocalBalance((prev) => prev - stake)
+        setPhase("countdown")
+        setCountdown(COUNTDOWN_DURATION)
+      }
     } finally {
       setIsSubmitting(false)
     }
   }, [isSubmitting, selectedColor, stake, balance, phase, address, isLiveMode, sendPlayTransaction])
 
   const resetRound = useCallback(() => {
+    console.log("[HueFi] Resetting round.")
     setPhase("betting")
     setSelectedColor(null)
     setWinningColor(null)
     setLastPayout(0)
     setCountdown(COUNTDOWN_DURATION)
+    setLastTxHash(undefined)
   }, [])
 
   const addFunds = useCallback((amount: number) => {

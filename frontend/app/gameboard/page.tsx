@@ -20,7 +20,7 @@ export default function GamePage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#0e1016] pt-20">
+    <main className="min-h-screen bg-[#0e1016] pt-">
       <GameBoard isDemoMode={false} />
     </main>
   );
