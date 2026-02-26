@@ -1,4 +1,4 @@
-const { Account, Contract, json, RpcProvider } = require("starknet");
+const { Account, json, RpcProvider, Signer, hash, CallData } = require("starknet");
 const fs = require("fs");
 const path = require("path");
 const dotenv = require("dotenv");
@@ -16,54 +16,87 @@ async function main() {
     console.log("- ACCOUNT_ADDRESS length:", accountAddress.length);
     console.log("- PRIVATE_KEY present:", !!privateKey);
 
-    if (!rpcUrl || !accountAddress || !privateKey || accountAddress.includes("your_")) {
-        console.error("Error: Missing or invalid environment variables in .env file.");
+    if (!rpcUrl || !accountAddress || !privateKey) {
+        console.error("Error: Missing environment variables in .env file.");
         process.exit(1);
     }
 
-    // Initialize Provider
-    // In starknet.js v6+, RpcProvider can take a string or an object { nodeUrl: ... }
     const provider = new RpcProvider({ nodeUrl: rpcUrl });
 
-    // Quick check if provider is responsive
     try {
         const chainId = await provider.getChainId();
         console.log("Connected to chain:", chainId);
     } catch (e) {
-        console.warn("Could not fetch chainId, provider might be misconfigured.");
+        console.error("Could not connect to RPC:", e.message);
+        process.exit(1);
     }
 
-    // Initialize Account
-    console.log("Attempting to create Account object...");
-    // The library version installed (starknet.js v6+) expects an options object
-    const account = new Account({
-        provider: provider,
-        address: accountAddress,
-        signer: privateKey
-    });
-    console.log("Account object created successfully for:", account.address);
+    // starknet.js v9.2.1: options-object with Signer instance
+    const signer = new Signer(privateKey);
+    const account = new Account({ provider, address: accountAddress, signer });
+    console.log("Account:", account.address);
 
-    // 2. Read Sierra and CASM artifacts
+    // 2. Read Sierra and CASM artifacts (from dev build)
     const sierraPath = path.join(__dirname, "../target/dev/huefi_HueFi.contract_class.json");
     const casmPath = path.join(__dirname, "../target/dev/huefi_HueFi.compiled_contract_class.json");
 
     const sierra = json.parse(fs.readFileSync(sierraPath).toString("ascii"));
     const casm = json.parse(fs.readFileSync(casmPath).toString("ascii"));
 
-    // 3. Declare and Deploy
-    const strkAddress = process.env.STRK_TOKEN_ADDRESS;
-    console.log("Staking Token (STRK):", strkAddress);
+    // Compute hashes explicitly from dev-built CASM
+    const compiledClassHash = hash.computeCompiledClassHash(casm);
+    const classHash = hash.computeContractClassHash(sierra);
+    console.log("\nSierra class hash:", classHash);
+    console.log("CASM compiled hash:", compiledClassHash);
 
-    console.log("Declaring and deploying HueFi...");
-    const deployResponse = await account.declareAndDeploy({
-        contract: sierra,
-        casm: casm,
-        constructorCalldata: [strkAddress],
+    // 3. Declare
+    console.log("\nDeclaring HueFi...");
+    let declaredClassHash;
+    try {
+        const declareResponse = await account.declare({
+            contract: sierra,
+            casm: casm,
+        });
+        console.log("Declare tx hash:", declareResponse.transaction_hash);
+        console.log("Waiting for declare to be accepted...");
+        await provider.waitForTransaction(declareResponse.transaction_hash);
+        declaredClassHash = declareResponse.class_hash;
+        console.log("Declared class hash:", declaredClassHash);
+    } catch (e) {
+        // Contract may already be declared — extract class hash from error or use computed
+        if (e.message && e.message.includes("already declared")) {
+            console.log("Contract already declared. Using computed class hash:", classHash);
+            declaredClassHash = classHash;
+        } else {
+            throw e;
+        }
+    }
+
+    // 4. Deploy
+    const strkAddress = process.env.STRK_TOKEN_ADDRESS;
+    if (!strkAddress) {
+        console.error("Error: STRK_TOKEN_ADDRESS not set in .env");
+        process.exit(1);
+    }
+    console.log("\nStaking Token (STRK):", strkAddress);
+    console.log("Deploying HueFi...");
+
+    const deployResponse = await account.deploy({
+        classHash: declaredClassHash,
+        constructorCalldata: CallData.compile({ usdc_address: strkAddress }),
+        salt: "0x1",
     });
 
-    console.log("Deployment successful!");
-    console.log("Contract Address:", deployResponse.deploy.contract_address);
-    console.log("Transaction Hash:", deployResponse.deploy.transaction_hash);
+    console.log("Deploy tx hash:", deployResponse.transaction_hash);
+    console.log("Waiting for deploy to be accepted...");
+    await provider.waitForTransaction(deployResponse.transaction_hash);
+
+    console.log("\n✅ Deployment successful!");
+    console.log("Contract Address:", deployResponse.contract_address);
+    console.log("Transaction Hash:", deployResponse.transaction_hash);
+    console.log("\nAdd this to frontend/.env.local:");
+    console.log(`NEXT_PUBLIC_HUEFI_CONTRACT_ADDRESS=${deployResponse.contract_address}`);
+    console.log(`NEXT_PUBLIC_STRK_TOKEN_ADDRESS=${strkAddress}`);
 }
 
 main()
