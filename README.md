@@ -63,7 +63,7 @@ HueFi/
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/HueFi.git
+git clone https://github.com/Pero4l/HueFi.git
 cd HueFi/frontend
 
 # Install dependencies
@@ -75,13 +75,14 @@ npm run dev
 
 ---
 
-## 🔒 Security
+## 🔒 Security & Privacy
 
-HueFi prioritizes fund security and contract integrity:
+HueFi is committed to user security, data sovereignty, and protocol integrity:
 
-- **Non-Custodial:** Players maintain full control of their funds at all times.
-- **Solvency Protection:** Contracts are designed to ensure payout capability for all active bets.
-- **Event-Driven:** Full transparency through on-chain event logging for every game round.
+- **Zero-Knowledge Privacy:** We do not collect or store personal identifiable information (PII). No Gmail, phone number, or KYC is required. User identity is managed exclusively through decentralized wallet authentication.
+- **Non-Custodial Architecture:** Users maintain absolute control over their assets. HueFi never takes custody of your funds; all interactions occur directly with the smart contracts.
+- **On-Chain Transparency:** Every game round, payout, and contract state transition is logged on-chain, ensuring a fully auditable and provably fair ecosystem.
+- **Protocol Solvency:** The smart contracts are engineered with built-in safeguards to guarantee reward distribution for all valid winning predictions.
 
 ---
 
