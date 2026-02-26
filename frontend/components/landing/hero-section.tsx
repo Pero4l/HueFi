@@ -299,7 +299,7 @@ export function HeroSection({ onDemoMode }: HeroSectionProps) {
             <div className="mt-10 flex flex-col gap-4 sm:flex-row">
               <button
                 onClick={onDemoMode}
-                className="rounded-xl md:px-12 px-6 md:py-6 py-4 text-sm font-semibold text-black shadow-[0_0_25px_rgba(0,0,0,0.5)] transition-all hover:scale-105"
+                className="rounded-xl md:px-12 px-6 md:py- py-4 text-sm font-semibold text-black shadow-[0_0_25px_rgba(0,0,0,0.5)] transition-all hover:scale-105"
                 style={{
                   background: `linear-gradient(to right, ${COLOR_CONFIG.yellow.hex})`,
                 }}
