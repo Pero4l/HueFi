@@ -223,7 +223,7 @@ export function HeroSection({ onDemoMode }: HeroSectionProps) {
             {/* Title */}
             <div className="mb-16 flex flex-col items-center gap-3">
               <h2 className="text-3xl font-black tracking-tight text-white sm:text-4xl">
-                Why <span className="text-[#facc15]">ColorStack?</span>
+                Why <span className="text-[#facc15]">HueFi?</span>
               </h2>
               <p className="max-w-xl text-sm text-white/60 sm:text-base">
                 Built for fairness, speed, and transparency.
