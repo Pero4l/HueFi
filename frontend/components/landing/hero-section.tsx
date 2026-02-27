@@ -77,7 +77,7 @@ export function HeroSection({ onDemoMode }: HeroSectionProps) {
   return (
     <>
       <Navbar />
-      <div className="relative flex min-h-screen flex-col items-center justify-center bg-[#05060a] px-4 py-10 text-white">
+      <div className="relative flex min-h-screen flex-col items-center justify-center bg-[#05060a] px-4 lg:py-10 text-white">
         {/* Background orbs */}
         <div
           className="pointer-events-none absolute inset-0 overflow-hidden"
