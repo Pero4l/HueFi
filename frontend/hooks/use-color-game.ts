@@ -90,6 +90,36 @@ export function useColorGame(initialBalance = 1000) {
   const [lastPayout, setLastPayout] = useState(0)
   const [history, setHistory] = useState<GameRound[]>([])
 
+  // ---------- Persistence ----------
+  // Load history from localStorage on mount/address change
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    const key = address ? `huefi_history_${address}` : "huefi_history_demo"
+    const saved = localStorage.getItem(key)
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved)
+        const formatted = parsed.map((item: any) => ({
+          ...item,
+          timestamp: new Date(item.timestamp),
+        }))
+        setHistory(formatted)
+      } catch (err) {
+        console.error("[HueFi] Failed to parse saved history:", err)
+        setHistory([])
+      }
+    } else {
+      setHistory([])
+    }
+  }, [address])
+
+  // Save history to localStorage whenever it changes
+  useEffect(() => {
+    if (typeof window === "undefined" || history.length === 0) return
+    const key = address ? `huefi_history_${address}` : "huefi_history_demo"
+    localStorage.setItem(key, JSON.stringify(history))
+  }, [history, address])
+
   // Transaction Tracking
   const [lastTxHash, setLastTxHash] = useState<string | undefined>(undefined)
   const { data: receipt, isSuccess: isTxAccepted } = useTransactionReceipt({ hash: lastTxHash })
@@ -161,14 +191,14 @@ export function useColorGame(initialBalance = 1000) {
         let winner: GameColor = "red" // fallback
 
         if (isLiveMode && address) {
-          console.log("[HueFi] Fetching live result from API for", address)
+          // console.log("[HueFi] Fetching live result from API for", address)
           try {
             // Wait slightly more to ensure contract state is updated
             await new Promise(r => setTimeout(r, 2000))
             // Fetch result from contract
             const resp = await fetch(`/api/game-result?address=${address}`)
             const json = await resp.json()
-            console.log("[HueFi] Game result API response:", json)
+            // console.log("[HueFi] Game result API response:", json)
 
             if (json.result && json.result.length > 0) {
               const resU256 = json.result[0]
