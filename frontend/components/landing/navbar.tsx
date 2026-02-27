@@ -1,20 +1,35 @@
 "use client"
 import { Wallet } from "lucide-react"
 import Link from "next/link"
-import { useAccount, useDisconnect } from "@starknet-react/core"
-import { useState, useEffect } from "react"
+import { useAccount, useDisconnect, useConnect } from "@starknet-react/core"
+import { useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { WalletModal } from "../game/walletmodal"
+import { useStarknetkitConnectModal } from "starknetkit"
 
 export function Navbar() {
-  const [modalOpen, setModalOpen] = useState(false)
   const { address, isConnected } = useAccount()
   const { disconnect } = useDisconnect()
+  const { connect } = useConnect()
   const router = useRouter()
+
+  const { starknetkitConnectModal } = useStarknetkitConnectModal({
+    modalMode: "canAsk", // will show the modal
+    modalTheme: "dark",
+  })
+
+  async function handleConnect() {
+    try {
+      const { connector } = await starknetkitConnectModal()
+      if (connector) {
+        connect({ connector })
+      }
+    } catch (error) {
+      console.error("[HueFi] Connection error:", error)
+    }
+  }
 
   useEffect(() => {
     if (isConnected && address) {
-      // setModalOpen(false);
       router.push("/gameboard");
     }
   }, [isConnected, address, router]);
@@ -62,7 +77,7 @@ export function Navbar() {
               </button>
             ) : (
               <button
-                onClick={() => setModalOpen(true)}
+                onClick={handleConnect}
                 className="cursor-pointer inline-flex h-11 items-center justify-center rounded-xl bg-[#facc15] md:px-8 px-4 md:text-md text-sm font-semibold text-black shadow-md transition hover:bg-[#eab308]"
               >
                 <Wallet className="md:w-6 w-4 md:h-6 h-4 mr-4" />
@@ -72,8 +87,6 @@ export function Navbar() {
           </div>
         </div>
       </header>
-
-      <WalletModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
     </>
   )
 }

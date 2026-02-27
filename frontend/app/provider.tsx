@@ -4,15 +4,13 @@ import { mainnet, sepolia } from "@starknet-react/chains";
 import {
   StarknetConfig,
   jsonRpcProvider,
+  voyager,
   argent,
   braavos,
-  useInjectedConnectors,
-  voyager,
 } from "@starknet-react/core";
 
 export function Providers({ children }: { children: ReactNode }) {
   // Define a custom Sepolia chain that ONLY uses our proxy
-  // We sanitize ALL rpcUrls to prevent the library from falling back to external nodes
   const mySepolia = {
     ...sepolia,
     rpcUrls: {
@@ -24,14 +22,10 @@ export function Providers({ children }: { children: ReactNode }) {
     }
   };
 
-  const { connectors } = useInjectedConnectors({
-    recommended: [
-      argent(),
-      braavos(),
-    ],
-    includeRecommended: "always",
-    order: "random"
-  });
+  const connectors = [
+    argent(),
+    braavos(),
+  ];
 
   const provider = jsonRpcProvider({
     rpc: (chain) => {

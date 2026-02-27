@@ -1,6 +1,6 @@
-import { useState, useCallback } from "react"
-import { useAccount, useDisconnect } from "@starknet-react/core"
-import { WalletModal } from "./walletmodal"
+import { useCallback } from "react"
+import { useAccount, useDisconnect, useConnect } from "@starknet-react/core"
+import { useStarknetkitConnectModal } from "starknetkit"
 
 interface BalanceHeaderProps {
   balance: number
@@ -11,15 +11,31 @@ interface BalanceHeaderProps {
 }
 
 export function BalanceHeader({ balance, isLoading, isDemoMode, onExitDemo }: BalanceHeaderProps) {
-  const [modalOpen, setModalOpen] = useState(false)
   const { address, isConnected } = useAccount()
   const { disconnect } = useDisconnect()
+  const { connect } = useConnect()
+
+  const { starknetkitConnectModal } = useStarknetkitConnectModal({
+    modalMode: "canAsk",
+    modalTheme: "dark",
+  })
   const isLow = balance < 10
 
   const shortenAddress = (addr?: string) => {
     if (!addr) return "";
     return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
   }
+
+  const handleConnect = useCallback(async () => {
+    try {
+      const { connector } = await starknetkitConnectModal()
+      if (connector) {
+        connect({ connector })
+      }
+    } catch (error) {
+      console.error("Connection error:", error)
+    }
+  }, [starknetkitConnectModal, connect])
 
   const handleDisconnect = useCallback(() => {
     disconnect()
@@ -63,9 +79,8 @@ export function BalanceHeader({ balance, isLoading, isDemoMode, onExitDemo }: Ba
               ) : (
                 <div className="flex flex-col items-end">
                   <span
-                    className={`font-mono text-xl font-black tabular-nums tracking-tighter ${
-                      isLow ? "text-red-500" : "text-green-500"
-                    } drop-shadow-[0_0_10px_rgba(34,197,94,0.2)]`}
+                    className={`font-mono text-xl font-black tabular-nums tracking-tighter ${isLow ? "text-red-500" : "text-green-500"
+                      } drop-shadow-[0_0_10px_rgba(34,197,94,0.2)]`}
                   >
                     {balance.toFixed(2)}
                   </span>
@@ -82,7 +97,7 @@ export function BalanceHeader({ balance, isLoading, isDemoMode, onExitDemo }: Ba
 
           {!isConnected && (
             <button
-              onClick={() => setModalOpen(true)}
+              onClick={handleConnect}
               className="h-8 rounded-lg bg-[#facc15] px-4 text-[10px] font-bold uppercase tracking-widest text-black transition-all hover:bg-[#eab308] active:scale-95 shadow-[0_0_15px_-3px_rgba(250,204,21,0.3)]"
             >
               Connect
@@ -90,7 +105,6 @@ export function BalanceHeader({ balance, isLoading, isDemoMode, onExitDemo }: Ba
           )}
         </div>
       </div>
-      <WalletModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
 
       {/* Wallet info bar */}
       {isConnected && address && (
