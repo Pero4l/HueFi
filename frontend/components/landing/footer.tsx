@@ -1,6 +1,7 @@
-import {Facebook, Twitter} from "lucide-react"
-import {FaTiktok} from "react-icons/fa"
+import {FaTiktok, FaFacebookF, } from "react-icons/fa"
 import Link from "next/link"
+import { FaXTwitter } from "react-icons/fa6"
+
 
 export function Footer() {
   return (
@@ -42,17 +43,17 @@ export function Footer() {
           ))} */}
 
 
-          <Link href="https://twitter.com" className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/5 text-[11px] text-white/60 transition hover:bg-white/10 hover:text-white">
-            <Facebook/>
+          <Link href="https://twitter.com" className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-[11px] text-white/60 transition hover:bg-white/10 hover:text-white">
+            <FaFacebookF className="text-xl"/>
           </Link>
 
 
-          <Link href="https://twitter.com" className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/5 text-[11px] text-white/60 transition hover:bg-white/10 hover:text-white">
-            <Twitter/>
+          <Link href="https://twitter.com" className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-[11px] text-white/60 transition hover:bg-white/10 hover:text-white">
+            <FaXTwitter className="text-xl"/>
           </Link>
 
-            <Link href="https://tiktok.com" className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/5 text-[11px] text-white/60 transition hover:bg-white/10 hover:text-white">
-            <FaTiktok/>
+            <Link href="https://tiktok.com" className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-[11px] text-white/60 transition hover:bg-white/10 hover:text-white">
+            <FaTiktok className="text-xl"/>
           </Link>
 
         </div>
