@@ -1,3 +1,5 @@
+import {Facebook} from "lucide-react"
+
 export function Footer() {
   return (
     <footer className="border-t border-white/5 bg-[#05060a]">
@@ -28,14 +30,16 @@ export function Footer() {
 
         {/* Right: Social icons (placeholders) */}
         <div className="flex items-center gap-3">
-          {["X", "D", "G"].map((icon) => (
+          {/* {[{id:1,icons: <Facebook/>, link: "https://facebook.com"}, "X", "D", "G"].map((icon) => (
             <button
-              key={icon}
+              key={icon.id || icon}
               className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/5 text-[11px] text-white/60 transition hover:bg-white/10 hover:text-white"
             >
-              {icon}
+              {icon.icons || icon}
             </button>
-          ))}
+          ))} */}
+
+          
         </div>
       </div>
 
