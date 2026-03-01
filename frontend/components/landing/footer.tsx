@@ -1,4 +1,5 @@
 import {Facebook} from "lucide-react"
+import Link from "next/link"
 
 export function Footer() {
   return (
@@ -39,7 +40,7 @@ export function Footer() {
             </button>
           ))} */}
 
-          
+          <Link href="https://twitter.com" className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/5 text-[11px] text-white/60 transition hover:bg-white/10 hover:text-white">
         </div>
       </div>
 
