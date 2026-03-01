@@ -1,4 +1,5 @@
 import {Facebook, Twitter} from "lucide-react"
+import {FaTiktok} from "react-icons/fa"
 import Link from "next/link"
 
 export function Footer() {
@@ -50,7 +51,10 @@ export function Footer() {
             <Twitter/>
           </Link>
 
-          
+            <Link href="https://tiktok.com" className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/5 text-[11px] text-white/60 transition hover:bg-white/10 hover:text-white">
+            <FaTiktok/>
+          </Link>
+
         </div>
       </div>
 
